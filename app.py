@@ -1,47 +1,72 @@
 from random import randrange
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, session, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
+import sqlite3
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///zahlen.db'
-db = SQLAlchemy(app)
-randomZahl = randrange(1, 100)
-richtig = True
+app.secret_key = b'Y5^osfE==t[1uo'
+
+conn = sqlite3.connect("highscore.db", check_same_thread=False)
+c = conn.cursor()
+c.execute("""CREATE TABLE IF NOT EXISTS 
+    user(name text, versuche int)""")
+
+
+
+
+randomZahl = randrange(0, 100)
+versuche = 0
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    print(randomZahl)
-    if request.method == 'POST':
-        new_number = request.form['number']
-        new_number = int(new_number)
-        if(new_number != ""):
-            t = Task(content=new_number)
-            db.session.add(t)
-            db.session.commit() 
-        return redirect('/')
-    else:
-        my_tasks = Task.query.all()
-        if(my_tasks):
-            print(my_tasks[-1].content)
-            if(int(my_tasks[-1].content) == randomZahl):
-                print("Test")
-                return render_template('index.html', tasks=my_tasks, richtig=richtig)
-            else:
-                return render_template('index.html', tasks=my_tasks)
+    if 'username' in session:
+        name = session["username"]
+        if request.method == 'POST':
+            newNumber = request.form['number']
+            print(randomZahl)
+            if newNumber != "":
+                newNumber = int(newNumber)
+                if newNumber <= 100 and newNumber >= 0:
+                    global versuche
+                    versuche+=1
+                    if newNumber == randomZahl:
+                        c.execute(
+                        "INSERT INTO user (name, versuche) VALUES(:name,:versuche)", 
+                        {'name':name, 'versuche':versuche})
+                        res= c.execute("SELECT name, versuche FROM user")
+                        print(res.fetchall())
+                        altVersuche =versuche
+                        versuche = 0
+                        conn.commit()
+                        print(name)
+                        return render_template('index.html', richtig=True, aktuelleZahl=newNumber, versuche=altVersuche, highscore=res.fetchall(), username=name)
+                    elif newNumber > randomZahl:
+                        return render_template('index.html', tiefer=True, aktuelleZahl=newNumber, versuche=versuche, username=name)
+                    elif newNumber < randomZahl:
+                        return render_template('index.html', hoeher=True, aktuelleZahl=newNumber, versuche=versuche, username=name)
+                else:
+                    return render_template('index.html', username=name)
         else:
-            return render_template('index.html', tasks=my_tasks)
+            return render_template('index.html', username=name)
+    return redirect('/login')
 
-@app.route('/delete/<int:id>')  #
-def delete(id):                 #
-    t = Task.query.get(id)      #
-    db.session.delete(t)        #
-    db.session.commit()         #
-    return redirect('/')        #
     
-# models
-class Task(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    content = db.Column(db.Integer)
-    
-db.create_all()
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        session['username'] = request.form['username']
+        return redirect(url_for('index'))
+    return '''
+        <form method="post">
+            <p><input type=text name=username>
+            <p><input type=submit value=Login>
+        </form>
+    '''
+
+@app.route('/logout')
+def logout():
+    # remove the username from the session if it's there
+    session.pop('username', None)
+    return redirect(url_for('index'))
