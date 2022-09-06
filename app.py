@@ -31,8 +31,7 @@ def index():
                     case 0:
                         saveToDb(name=versuche,versuche=versuche)
                         altVersuche =versuche
-                        versuche = 0
-                        print(name)                   
+                        versuche = 0                  
                         session["randomZahl"] = randrange(0, 100)
                         highscore = getHighscore()
                         return render_template('index.html', richtig=True, aktuelleZahl=newNumber, versuche=altVersuche, highscore=highscore, username=name)
@@ -74,5 +73,5 @@ def saveToDb(name, versuche):
 
 def getHighscore():
     highscore = c.execute("SELECT name, versuche FROM user ORDER BY versuche ASC LIMIT 10")
-    highscore.fetchall()
+    highscore = highscore.fetchall()
     return highscore
