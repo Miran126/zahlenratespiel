@@ -2,7 +2,8 @@
 <html>
 <head>
     <!-- # Stylesheet -->
-    <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">   
+    <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"> 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Ratespiel</title>
@@ -18,7 +19,7 @@
     
     <form action='' method='post'>
         <label for='content'>Gib eine Zahl zwischen 0 und 100 zwischen 0 und 100 ein:</label>
-        <input type='number' name='number' placeholder="0">
+        <input type='number' name='number' placeholder="0" min="0" max="100">
         <input type='submit' value='Bestätigen' class="button">
     </form>
 
@@ -26,7 +27,39 @@
     {% if richtig == True %}
     {% block content %}
     <div>Richtig!</div>
-    <div>{{highscore}}</div>
+    <table>
+
+        <thead>
+    
+          <tr>
+    
+              <th>name</th>
+    
+              <th>versuche</th>
+    
+          </tr>
+    
+          </thead>    
+    
+          <tbody>
+    
+           {% for row in highscore %}    
+    
+                  <tr>
+    
+                      <td>{{row[0]}}</td>
+    
+                      <td>{{row[1]}}</td>
+    
+                      <td>{{row[2]}}</td>
+    
+                  </tr>
+    
+              {% endfor %}
+    
+          </tbody>
+    
+      </table>
     {% endblock content %}
 {% endif %}
 

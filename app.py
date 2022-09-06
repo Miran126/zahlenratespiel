@@ -23,27 +23,22 @@ def index():
             print(session["randomZahl"])
             if newNumber != "":
                 newNumber = int(newNumber)
-                if newNumber <= 100 and newNumber >= 0:
-                    global versuche
-                    versuche+=1
-                    if newNumber == session["randomZahl"]:
-                        c.execute(
-                        "INSERT INTO user (name, versuche) VALUES(:name,:versuche)", 
-                        {'name':name, 'versuche':versuche})
-                        res= c.execute("SELECT name, versuche FROM user")
-                        print(res.fetchall())
-                        altVersuche =versuche
-                        versuche = 0
-                        conn.commit()
-                        print(name)
-                        session["randomZahl"] = randrange(0, 100)
-                        return render_template('index.html', richtig=True, aktuelleZahl=newNumber, versuche=altVersuche, highscore=res.fetchall(), username=name)
-                    elif newNumber > session["randomZahl"]:
-                        return render_template('index.html', tiefer=True, aktuelleZahl=newNumber, versuche=versuche, username=name)
-                    elif newNumber < session["randomZahl"]:
-                        return render_template('index.html', hoeher=True, aktuelleZahl=newNumber, versuche=versuche, username=name)
-                else:
-                    return render_template('index.html', username=name)
+                global versuche
+                versuche+=1
+                if newNumber == session["randomZahl"]:
+                    c.execute(
+                    "INSERT INTO user (name, versuche) VALUES(:name,:versuche)", 
+                    {'name':name, 'versuche':versuche})
+                    res = c.execute("SELECT name, versuche FROM user ORDER BY versuche ASC LIMIT 10")
+                    altVersuche = versuche
+                    versuche = 0
+                    conn.commit()
+                    session["randomZahl"] = randrange(0, 100)
+                    return render_template('index.html', richtig=True, aktuelleZahl=newNumber, versuche=altVersuche, highscore=res.fetchall(), username=name)
+                elif newNumber > session["randomZahl"]:
+                    return render_template('index.html', tiefer=True, aktuelleZahl=newNumber, versuche=versuche, username=name)
+                elif newNumber < session["randomZahl"]:
+                    return render_template('index.html', hoeher=True, aktuelleZahl=newNumber, versuche=versuche, username=name)
         else:
             return render_template('index.html', username=name)
     return redirect('/login')
@@ -55,12 +50,7 @@ def login():
         session['username'] = request.form['username']
         session["randomZahl"] = randrange(0, 100)
         return redirect(url_for('index'))
-    return '''
-        <form method="post">
-            <p><input type=text name=username>
-            <p><input type=submit value=Login>
-        </form>
-    '''
+    return render_template('login.html')
 
 @app.route('/logout')
 def logout():
