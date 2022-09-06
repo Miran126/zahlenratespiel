@@ -17,10 +17,11 @@
 {% endif %}
     
     <form action='' method='post'>
-        <label for='content'>Gib eine Zahl zwischen 0 und 100 ein:</label>
+        <label for='content'>Gib eine Zahl zwischen 0 und 100 zwischen 0 und 100 ein:</label>
         <input type='number' name='number' placeholder="0">
         <input type='submit' value='Bestätigen' class="button">
     </form>
+
 
     {% if richtig == True %}
     {% block content %}
@@ -30,9 +31,9 @@
 {% endif %}
 
     {% if tiefer == True %}
-    {% block content2 %}
+    {% block content1 %}
     <div>Tiefer als {{aktuelleZahl}}!</div>
-    {% endblock content2 %}
+    {% endblock content1 %}
 {% endif %}
 
     {% if hoeher == True %}
@@ -40,5 +41,6 @@
     <div>Höher als {{aktuelleZahl}}!</div>
     {% endblock content3 %}
 {% endif %}
+
 </body>
 </html>

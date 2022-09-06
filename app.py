@@ -12,10 +12,6 @@ c = conn.cursor()
 c.execute("""CREATE TABLE IF NOT EXISTS 
     user(name text, versuche int)""")
 
-
-
-
-randomZahl = randrange(0, 100)
 versuche = 0
 
 @app.route('/', methods=['GET', 'POST'])
@@ -24,13 +20,13 @@ def index():
         name = session["username"]
         if request.method == 'POST':
             newNumber = request.form['number']
-            print(randomZahl)
+            print(session["randomZahl"])
             if newNumber != "":
                 newNumber = int(newNumber)
                 if newNumber <= 100 and newNumber >= 0:
                     global versuche
                     versuche+=1
-                    if newNumber == randomZahl:
+                    if newNumber == session["randomZahl"]:
                         c.execute(
                         "INSERT INTO user (name, versuche) VALUES(:name,:versuche)", 
                         {'name':name, 'versuche':versuche})
@@ -40,10 +36,11 @@ def index():
                         versuche = 0
                         conn.commit()
                         print(name)
+                        session["randomZahl"] = randrange(0, 100)
                         return render_template('index.html', richtig=True, aktuelleZahl=newNumber, versuche=altVersuche, highscore=res.fetchall(), username=name)
-                    elif newNumber > randomZahl:
+                    elif newNumber > session["randomZahl"]:
                         return render_template('index.html', tiefer=True, aktuelleZahl=newNumber, versuche=versuche, username=name)
-                    elif newNumber < randomZahl:
+                    elif newNumber < session["randomZahl"]:
                         return render_template('index.html', hoeher=True, aktuelleZahl=newNumber, versuche=versuche, username=name)
                 else:
                     return render_template('index.html', username=name)
@@ -51,12 +48,12 @@ def index():
             return render_template('index.html', username=name)
     return redirect('/login')
 
-    
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         session['username'] = request.form['username']
+        session["randomZahl"] = randrange(0, 100)
         return redirect(url_for('index'))
     return '''
         <form method="post">
