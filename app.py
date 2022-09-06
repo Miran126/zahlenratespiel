@@ -23,31 +23,27 @@ def index():
             print(session["randomZahl"])
             if newNumber != "":
                 newNumber = int(newNumber)
-                if newNumber <= 100 and newNumber >= 0:
-                    global versuche
-                    versuche+=1
-                    if newNumber == session["randomZahl"]:
-                        c.execute(
-                        "INSERT INTO user (name, versuche) VALUES(:name,:versuche)", 
-                        {'name':name, 'versuche':versuche})
-                        res= c.execute("SELECT name, versuche FROM user")
-                        print(res.fetchall())
+                global versuche
+                versuche+=1
+
+                guess = evaluateInput(input=newNumber)
+                match guess:
+                    case 0:
+                        saveToDb(name=versuche,versuche=versuche)
                         altVersuche =versuche
                         versuche = 0
-                        conn.commit()
-                        print(name)
+                        print(name)                   
                         session["randomZahl"] = randrange(0, 100)
-                        return render_template('index.html', richtig=True, aktuelleZahl=newNumber, versuche=altVersuche, highscore=res.fetchall(), username=name)
-                    elif newNumber > session["randomZahl"]:
+                        highscore = getHighscore()
+                        return render_template('index.html', richtig=True, aktuelleZahl=newNumber, versuche=altVersuche, highscore=highscore, username=name)
+                    case 1:
+                         return render_template('index.html', hoeher=True, aktuelleZahl=newNumber, versuche=versuche, username=name)
+                    case 2:
                         return render_template('index.html', tiefer=True, aktuelleZahl=newNumber, versuche=versuche, username=name)
-                    elif newNumber < session["randomZahl"]:
-                        return render_template('index.html', hoeher=True, aktuelleZahl=newNumber, versuche=versuche, username=name)
-                else:
-                    return render_template('index.html', username=name)
+              
         else:
             return render_template('index.html', username=name)
     return redirect('/login')
-
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -55,15 +51,28 @@ def login():
         session['username'] = request.form['username']
         session["randomZahl"] = randrange(0, 100)
         return redirect(url_for('index'))
-    return '''
-        <form method="post">
-            <p><input type=text name=username>
-            <p><input type=submit value=Login>
-        </form>
-    '''
+    return render_template('login.html')
 
 @app.route('/logout')
 def logout():
     # remove the username from the session if it's there
     session.pop('username', None)
     return redirect(url_for('index'))
+
+def evaluateInput(input):
+    if input <= 100 and input >= 0:
+        if input == session["randomZahl"]:
+            return 0
+        elif input < session["randomZahl"]:
+            return 1
+        else:
+            return 2
+
+def saveToDb(name, versuche):
+    c.execute("INSERT INTO user (name, versuche) VALUES(:name,:versuche)", {'name':name, 'versuche':versuche})
+    conn.commit()
+
+def getHighscore():
+    highscore = c.execute("SELECT name, versuche FROM user ORDER BY versuche ASC LIMIT 10")
+    highscore.fetchall()
+    return highscore
