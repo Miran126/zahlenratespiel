@@ -1,6 +1,5 @@
 from random import randrange
 from flask import Flask, render_template, request, session, redirect, url_for
-from flask_sqlalchemy import SQLAlchemy
 import sqlite3
 
 app = Flask(__name__)
@@ -20,19 +19,17 @@ def index():
         name = session["username"]
         if request.method == 'POST':
             newNumber = request.form['number']
-            print(session["randomZahl"])
             if newNumber != "":
                 newNumber = int(newNumber)
                 global versuche
                 versuche+=1
 
-                guess = evaluateInput(input=newNumber)
+                guess = evaluateInput(newNumber)
                 match guess:
                     case 0:
-                        saveToDb(name=versuche,versuche=versuche)
-                        altVersuche =versuche
-                        versuche = 0
-                        print(name)                   
+                        saveToDb(name, versuche)
+                        altVersuche = versuche
+                        versuche = 0                  
                         session["randomZahl"] = randrange(0, 100)
                         highscore = getHighscore()
                         return render_template('index.html', richtig=True, aktuelleZahl=newNumber, versuche=altVersuche, highscore=highscore, username=name)
@@ -55,18 +52,16 @@ def login():
 
 @app.route('/logout')
 def logout():
-    # remove the username from the session if it's there
     session.pop('username', None)
     return redirect(url_for('index'))
 
 def evaluateInput(input):
-    if input <= 100 and input >= 0:
-        if input == session["randomZahl"]:
-            return 0
-        elif input < session["randomZahl"]:
-            return 1
-        else:
-            return 2
+    if input == session["randomZahl"]:
+        return 0
+    elif input < session["randomZahl"]:
+        return 1
+    else:
+        return 2
 
 def saveToDb(name, versuche):
     c.execute("INSERT INTO user (name, versuche) VALUES(:name,:versuche)", {'name':name, 'versuche':versuche})
