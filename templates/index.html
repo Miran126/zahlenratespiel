@@ -9,89 +9,68 @@
     <title>Ratespiel</title>
 </head>
 <body>
-    <h1 class="test">Ratespiel</h1>
-    <div>User: {{username}}</div>
-    {% if versuche %}
-    {% block content4 %}
-    <div>Bereits gebrauchte Versuche: {{versuche}}</div>
-    {% endblock content4 %}
-{% endif %}
-    
-    <form action='' method='post'>
-        <label for='content'>Gib eine Zahl zwischen 0 und 100 zwischen 0 und 100 ein:</label>
-        <input type='number' name='number' placeholder="0" min="0" max="100">
-        <input type='submit' value='Bestätigen' class="button">
-    </form>
+    <div class="header">
+        <div class="spieler">Spieler: {{username}}</div>
+        <h1 class="topheader">Ratespiel</h1>
+    </div>
+        
+    <div class="box">
+        
+        {% if versuche %}
+        {% block content4 %}
+        <div>Bereits gebrauchte Versuche: {{versuche}}</div>
+        {% endblock content4 %}
+        {% endif %}
 
-    {% if richtig == True %}
-    {% block content %}
-    <div>Richtig!</div>
-    <table>
+        <form action='' method='post'>
+            <label for='content'>Gib eine Zahl zwischen 0 und 100:</label>
+            <br>
+            <input type='number' name='number' placeholder="0" min="0" max="100">
+            <input type='submit' value='Bestätigen' class="button">
+        </form>
 
+        {% if richtig == True %}
+        {% block content %}
+        <div class="richtig">Richtig!</div>
+    </div>
+    <table class="greenTable">
         <thead>
-    
-          <tr>
-    
-              <th>name</th>
-    
-              <th>versuche</th>
-    
-          </tr>
-    
-          </thead>    
-    
-          <tbody>
-    
-           {% for row in highscore %}    
-    
+        <tr>
+            <th>Name</th>
+            <th>Versuche</th>
+        </tr>
+        </thead>
+        <tfoot>
+            <tr>
+            <td colspan="2">
+            </td>
+            </tr>
+        </tfoot>
+        <tbody>
+            {% for row in highscore %}
                   <tr>
-    
                       <td>{{row[0]}}</td>
-    
+
                       <td>{{row[1]}}</td>
-    
-                      <td>{{row[2]}}</td>
-    
+
+                      <!-- <td>{{row[2]}}</td> -->
                   </tr>
-    
-              {% endfor %}
-    
-          </tbody>
-    
-      </table>
+            {% endfor %}
+        <tbody>
     {% endblock content %}
-{% endif %}
+    {% endif %}
 
     {% if tiefer == True %}
     {% block content1 %}
-    <div>Tiefer als {{aktuelleZahl}}!</div>
+    <div class="falsch">Tiefer als {{aktuelleZahl}}!</div>
     {% endblock content1 %}
-{% endif %}
+    {% endif %}
 
     {% if hoeher == True %}
     {% block content3 %}
-    <div>Höher als {{aktuelleZahl}}!</div>
+    <div class="falsch">Höher als {{aktuelleZahl}}!</div>
     {% endblock content3 %}
-{% endif %}
-
-<table>
-    <thead>
-      <tr>
-          <th>ID</th>
-          <th>name</th>
-          <th>versuche</th>
-      </tr>
-      </thead>    
-      <tbody>
-       {% for row in highscore %}    
-              <tr>
-                  <td>{{row[0]}}</td>
-                  <td>{{row[1]}}</td>
-                  <td>{{row[2]}}</td>
-              </tr>
-          {% endfor %}
-      </tbody>
-  </table>
+    {% endif %}
 
 </body>
 </html>

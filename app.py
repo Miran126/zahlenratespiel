@@ -37,7 +37,7 @@ def index():
                         highscore = getHighscore()
                         return render_template('index.html', richtig=True, aktuelleZahl=newNumber, versuche=altVersuche, highscore=highscore, username=name)
                     case 1:
-                         return render_template('index.html', hoeher=True, aktuelleZahl=newNumber, versuche=versuche, username=name)
+                        return render_template('index.html', hoeher=True, aktuelleZahl=newNumber, versuche=versuche, username=name)
                     case 2:
                         return render_template('index.html', tiefer=True, aktuelleZahl=newNumber, versuche=versuche, username=name)
               
@@ -74,5 +74,5 @@ def saveToDb(name, versuche):
 
 def getHighscore():
     highscore = c.execute("SELECT name, versuche FROM user ORDER BY versuche ASC LIMIT 10")
-    highscore.fetchall()
+    highscore = highscore.fetchall()
     return highscore
