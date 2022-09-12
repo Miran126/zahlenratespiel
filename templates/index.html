@@ -10,7 +10,11 @@
 </head>
 <body>
     <div class="header">
-        <div class="spieler">Spieler: {{username}}</div>
+        <div class="spieler">Spieler: {{username}}
+            <form action="/logout">
+                <input type="submit" value="Logout" class="logout"/>
+            </form>
+        </div>
         <h1 class="topheader">Ratespiel</h1>
     </div>
         

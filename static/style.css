@@ -95,55 +95,31 @@ table.customTable thead {
   }
 
   .button{
-
     color: white;
-
     background-color: green;
-
     border: none;
-
     padding: 10px 25px;
-
     text-align: center;
-
     text-decoration: none;
-
     display: inline-block;
-
     font-size: 12px;
-
     margin: 4px 2px;
-
     cursor: pointer;
-
     -webkit-transition-duration: 0.4s;
-
     transition-duration: 0.4s;
-
     border-radius: 7px;
-
-    
-
 }
 
 .button:hover {
-
     box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24),0 17px 50px 0 rgba(0,0,0,0.19);
-
   }
 
   .falsch{
-
     color: red;
-
  }
 
-
-
  .richtig{
-
     color: green;
-
  }
 
  body {
@@ -163,4 +139,20 @@ table.customTable thead {
  .header {
     display: flex;
     flex-direction: column;
+ }
+
+ .logout{
+    color: white;
+    background-color: green;
+    border: none;
+    padding: 10px 25px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 12px;
+    margin: 4px 2px;
+    cursor: pointer;
+    -webkit-transition-duration: 0.4s;
+    transition-duration: 0.4s;
+    border-radius: 7px;
  }
